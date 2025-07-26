@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Your Yoga Pose</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .upload-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        .upload-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-header h2 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .upload-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .upload-section {
+            margin-bottom: 25px;
+        }
+
+        .upload-section h3 {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .capture-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .capture-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            background: #f8f9fa;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .capture-btn.active,
+        .capture-btn:hover {
+            border-color: #667eea;
+            background: white;
+            color: #667eea;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            background: #f8f9fa;
+        }
+
+        .file-upload-area:hover,
+        .file-upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .file-upload-area input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .upload-subtext {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .file-info {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            color: #0066cc;
+        }
+
+        .preview-section {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .preview-placeholder {
+            background: #f8f9fa;
+            border: 1px solid #e1e1e1;
+            border-radius: 10px;
+            padding: 40px;
+            color: #666;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #764ba2;
+        }
+
+        .supported-formats {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .flash-message.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .flash-message.danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        @media (max-width: 480px) {
+            .upload-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .capture-methods {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <div class="upload-header">
+            <h2>Upload Your Yoga Pose</h2>
+            <p>Select pose type and upload your video for analysis</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('upload_video') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="pose_type">Select Pose Type</label>
+                <select name="pose_type" id="pose_type" required>
+                    <option value="downward_dog">Downward Dog</option>
+                    <option value="warrior">Warrior Pose</option>
+                    <option value="tree">Tree Pose</option>
+                    <option value="mountain">Mountain Pose</option>
+                    <option value="child">Child's Pose</option>
+                    <option value="cobra">Cobra Pose</option>
+                    <option value="triangle">Triangle Pose</option>
+                    <option value="plank">Plank Pose</option>
+                </select>
+            </div>
+
+            <div class="upload-section">
+                <h3>Capture Method</h3>
+                <div class="capture-methods">
+                    <div class="capture-btn active" onclick="selectCaptureMethod('file')">
+                        📁 Upload File
+                    </div>
+                    <div class="capture-btn" onclick="selectCaptureMethod('camera')">
+                        📷 Use Camera
+                    </div>
+                </div>
+
+                <div id="file-upload" class="upload-method">
+                    <h4 style="margin-bottom: 15px; color: #333;">Upload Image or Video</h4>
+                    <div class="file-upload-area" onclick="document.getElementById('video-file').click()">
+                        <input type="file" name="video" id="video-file" accept=".mp4,.avi,.mov,.wmv,.flv,.webm,.jpg,.jpeg,.png" onchange="handleFileSelect(this)">
+                        <div class="upload-icon">🎥</div>
+                        <div class="upload-text">Choose File</div>
+                        <div class="upload-subtext">Click here to select your video file</div>
+                    </div>
+                    <div id="file-info" class="file-info"></div>
+                </div>
+
+                <div id="camera-upload" class="upload-method" style="display: none;">
+                    <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                        Camera feature coming soon! Please use file upload for now.
+                    </p>
+                </div>
+            </div>
+
+            <div class="preview-section" id="preview-section">
+                <h4 style="margin-bottom: 15px; color: #333;">Preview</h4>
+                <div class="preview-placeholder">
+                    <div class="upload-icon">🖼️</div>
+                    <p>Preview will appear here</p>
+                </div>
+            </div>
+
+            <button type="submit" class="upload-btn" id="upload-btn" disabled>
+                Upload and Analyze
+            </button>
+        </form>
+
+        <div class="supported-formats">
+            Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM (Max 50MB)
+        </div>
+
+        <div class="back-link">
+            <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        function selectCaptureMethod(method) {
+            // Update button states
+            document.querySelectorAll('.capture-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Show/hide upload methods
+            document.getElementById('file-upload').style.display = method === 'file' ? 'block' : 'none';
+            document.getElementById('camera-upload').style.display = method === 'camera' ? 'block' : 'none';
+        }
+
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            const fileInfo = document.getElementById('file-info');
+            const uploadBtn = document.getElementById('upload-btn');
+            const previewSection = document.getElementById('preview-section');
+            
+            if (file) {
+                // Show file info
+                fileInfo.style.display = 'block';
+                fileInfo.innerHTML = `
+                    <strong>Selected:</strong> ${file.name}<br>
+                    <strong>Size:</strong> ${(file.size / (1024 * 1024)).toFixed(2)} MB<br>
+                    <strong>Type:</strong> ${file.type}
+                `;
+                
+                // Enable upload button
+                uploadBtn.disabled = false;
+                
+                // Show preview section
+                previewSection.style.display = 'block';
+                
+                // Update upload area text
+                const uploadArea = document.querySelector('.file-upload-area');
+                uploadArea.querySelector('.upload-text').textContent = 'File Selected!';
+                uploadArea.querySelector('.upload-subtext').textContent = 'Click to choose a different file';
+            } else {
+                fileInfo.style.display = 'none';
+                uploadBtn.disabled = true;
+                previewSection.style.display = 'none';
+            }
+        }
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.file-upload-area');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('video-file').files = files;
+                handleFileSelect(document.getElementById('video-file'));
+            }
+        });
+    </script>
+</body>
+</html>

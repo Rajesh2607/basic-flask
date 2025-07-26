@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Yoga Pose Analysis Results</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .analysis-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .score-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .score-description {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .feedback-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .feedback-card h3 {
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-text {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .details-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .details-section h3 {
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .detail-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .pose-info {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .pose-info h3 {
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .pose-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meta-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .meta-value {
+            color: #333;
+        }
+
+        .pose-type-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .recommendations {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .recommendations h3 {
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation-list {
+            list-style: none;
+        }
+
+        .recommendation-list li {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            color: #333;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 1px solid #e1e1e1;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .score-excellent { color: #28a745; }
+        .score-good { color: #17a2b8; }
+        .score-fair { color: #ffc107; }
+        .score-poor { color: #dc3545; }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .score-display {
+                font-size: 56px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="analysis-container">
+        <div class="header">
+            <h1>🧘‍♀️ Yoga Pose Analysis Results</h1>
+            <p>Here's how you performed in your {{ video[4]|replace('_', ' ')|title }} pose</p>
+        </div>
+
+        <div class="results-grid">
+            <div class="score-card">
+                {% if video[6] %}
+                    <div class="score-display {% if video[6] >= 90 %}score-excellent{% elif video[6] >= 75 %}score-good{% elif video[6] >= 60 %}score-fair{% else %}score-poor{% endif %}">
+                        {{ video[6] }}
+                    </div>
+                    <div class="score-label">Overall Score</div>
+                    <div class="score-description">Out of 100</div>
+                {% else %}
+                    <div class="score-display">--</div>
+                    <div class="score-label">Analysis Pending</div>
+                    <div class="score-description">Please wait...</div>
+                {% endif %}
+            </div>
+
+            <div class="feedback-card">
+                <h3>🎯 AI Feedback</h3>
+                <div class="feedback-text">
+                    {% if analysis_data.feedback %}
+                        {{ analysis_data.feedback }}
+                    {% else %}
+                        Your video is being analyzed. Please check back in a moment for detailed feedback.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="pose-info">
+            <h3>📋 Session Details</h3>
+            <div class="pose-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Pose Type:</span>
+                    <span class="pose-type-badge">{{ video[4]|replace('_', ' ')|title }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Video Name:</span>
+                    <span class="meta-value">{{ video[3] }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Upload Time:</span>
+                    <span class="meta-value">{{ video[5][:16] }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Status:</span>
+                    <span class="meta-value">{{ video[8]|title }}</span>
+                </div>
+            </div>
+        </div>
+
+        {% if analysis_data.frames_analyzed %}
+        <div class="details-section">
+            <h3>📊 Analysis Details</h3>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-value">{{ analysis_data.frames_analyzed }}</div>
+                    <div class="detail-label">Frames Analyzed</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">{{ analysis_data.average_score }}</div>
+                    <div class="detail-label">Average Score</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">{{ video[4]|replace('_', ' ')|title }}</div>
+                    <div class="detail-label">Pose Detected</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">
+                        {% if video[6] >= 90 %}
+                            Excellent
+                        {% elif video[6] >= 75 %}
+                            Good
+                        {% elif video[6] >= 60 %}
+                            Fair
+                        {% else %}
+                            Needs Practice
+                        {% endif %}
+                    </div>
+                    <div class="detail-label">Performance Level</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="recommendations">
+            <h3>💡 Improvement Tips</h3>
+            <ul class="recommendation-list">
+                {% if video[4] == 'downward_dog' %}
+                    <li>Keep your arms straight and press firmly into your palms</li>
+                    <li>Engage your core and lift your hips up and back</li>
+                    <li>Keep your neck neutral and look between your hands</li>
+                    <li>Press your heels toward the ground (they don't need to touch)</li>
+                {% elif video[4] == 'warrior' %}
+                    <li>Keep your front thigh parallel to the ground</li>
+                    <li>Ensure your front knee is directly over your ankle</li>
+                    <li>Keep your torso upright and shoulders relaxed</li>
+                    <li>Ground through both feet for stability</li>
+                {% elif video[4] == 'tree' %}
+                    <li>Focus on a fixed point ahead to maintain balance</li>
+                    <li>Press your lifted foot firmly into your standing leg</li>
+                    <li>Avoid placing your foot on the side of your knee</li>
+                    <li>Keep your hips square and facing forward</li>
+                {% else %}
+                    <li>Focus on proper alignment and breathing</li>
+                    <li>Hold the pose steadily for better results</li>
+                    <li>Practice regularly to improve your form</li>
+                    <li>Consider taking classes with a qualified instructor</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="actions">
+            <a href="{{ url_for('upload') }}" class="btn btn-primary">Upload Another Video</a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
